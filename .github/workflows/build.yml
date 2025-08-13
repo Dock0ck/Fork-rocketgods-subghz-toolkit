@@ -1,0 +1,28 @@
+name: "FAP: Build (ufbt)"
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Build with the official Micro Flipper Build Tool (uFBT)
+      - name: Build with ufbt (release channel)
+        id: build
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        with:
+          # For most users on official firmware, 'release' is safest.
+          # You can change to 'dev' if your Flipper runs a dev firmware.
+          sdk-channel: release
+          # The app lives at the repo root, so default app-dir "." is fine.
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}-${{ steps.build.outputs.suffix }}
+          path: ${{ steps.build.outputs.fap-artifacts }}
